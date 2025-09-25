@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All References</title>
+  <style>
+    :root{ --panel:#fff; --border:#e2e8f0; --muted:#6b7280; --text:#0f172a; --accent:#0ea5e9; --hl:#fef3c7; --hlborder:#f59e0b; --radius:12px; }
+    *{box-sizing:border-box}
+    .title-panel {text-align: left; margin-left: 6px; margin-right: 16px; margin-top: 8px;}
+    .title-panel h1 {display: inline-flex; font-size: 14px; font-weight: 600; color: #1f4d89 ; padding: 4px 10px; margin: 0}  
+    .home-btn {display: inline-flex; align-items: center;justify-content: center; font-size: 14px; border-radius: 10px; margin:0 ;background: #f8fafc; text-decoration: none; border: 1px solid #cbd5e1; color: #1f4d89; padding: 4px 4px;}
+    .home-btn:hover { background: #f1f5f9;}
+
+    body{margin:0; font-family:ui-sans-serif,system-ui; background:#f1f5f9; color:var(--text)}
+    .app{display:grid; grid-template-columns: 450px 1fr; gap:10px; padding:10px;}
+    .panel{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px}
+    h1{margin:0 0 8px 0; font-size:16px}
+
+    .sub{color:var(--muted); font-size:13px; margin-bottom:8px}
+    label{font-size:13px; color:var(--muted); display:block; margin:4px 0 2px}
+    .btn{display:inline-flex; gap:8px; align-items:center; font-size:12px;padding:4px 6px; border:1px solid var(--border); border-radius:10px; background:#f8fafc; cursor:pointer; text-decoration:none; color:inherit}
+    .btn:hover{background:#eef2f7}
+    .filters h2{margin:12px 0 6px; font-size:14px}
+    .group{ border-top:1px dashed var(--border); padding-top:6px; margin-top:8px}
+    .group h1{margin:0 0 8px 0; font-size:12px; font-weight: 500;}
+    .chk{display:flex; gap:4px; align-items:center; margin:4px 0}
+    .chk_rel{display:flex; gap:4px; align-items: center; margin: 4px 0px; border:1px solid var(--hlborder); border-radius:10px; background:var(--hl); padding:1px 4px; }
+
+
+    .grid-wrap{background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px}
+    .grid-header{display:grid; grid-template-columns: 140px repeat(3,1fr); gap:8px; margin-bottom:8px}
+    .grid-header .col{font-weight:700; text-align:center}
+    .grid{display:grid; grid-template-columns: 140px repeat(3,1fr); gap:8px}
+    .row-label{padding:8px 10px; border:1px solid var(--border); border-radius:10px; background:#f8fafc; font-weight:700}
+    
+    .cell{border:1px solid var(--border); border-radius:12px; background:#f8fafc; padding:8px; min-height:56px}
+    .cell .refs{display:flex; flex-wrap:wrap; gap:6px; max-height:36vh; overflow:auto}
+    
+    .ref-btn{font-size:12px; background:#fff; border:1px solid #94a3b8; border-radius:999px; padding:6px 8px; cursor:pointer}
+    .ref-btn:hover{border-color:#dfe1e6; box-shadow:10px 10px 10px 10px rgba(255, 255, 255, 0.99) inset;cursor: pointer;}
+    .ref-btn.hl{background:var(--hl); border-color:var(--hlborder);}
+    .modal-backdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:50}
+    .modal{display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; color:#1e65a3; border:1px solid var(--border); border-radius:16px; width:80%; max-height: 80% ; z-index:60; box-shadow:0 20px 60px rgba(0,0,0,.5); overflow:auto}
+    .modal-header{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--border)}
+    .modal-title { font-weight: 700;}
+    .modal-body { padding: 16px; display: grid; gap: 8px; font-size: 12px; font-weight: 300;}
+    .muted {color: #9c9a9a; margin-right: 4px;}
+    .modal-body{padding:14px; display:grid; gap:8px; font-size:13px}
+    .modal-sections{display:grid; gap:8px; grid-template-columns: 1fr 1fr 1fr 1fr; line-height:1.2; max-height:60vh; overflow:auto}
+ 
+ 
+ 
+ </style>
+</head>
+<body>
+  <section class="title-panel">
+      <div class="title-panel">
+      <a href="index.html" class="home-btn"> 🏠 </a>
+      <h1>Digital workflows for informed decision making in building envelope design: A systematic literature review.</h1>
+    </section>
+  <div class="app">
+    <aside>
+        <div class="panel">
+        <h1>References classified by year and number of tasks</h1>
+        <div class="sub">Toggle any category. A reference is shown if it matches <b>any</b> selected filter in <b>any</b> of its tasks.</div>
+        <a href="3matrix.html" class="btn">← Back to matrix</a>
+        <a href="KPI_register.html" class="btn">← Back to KPIs</a>
+
+        <div class="group">
+          <div class="chk_rel">
+            <input id="rel-ex" type="checkbox" checked /> 
+            <label for="rel-ex">Relevant examples</label>
+          </div>
+        </div>
+
+        <div class="group">
+          <h1>Variables</h1>
+          <div id="f-vars"></div>
+        </div>
+
+        <div class="group">
+          <h1>Performance objectives</h1>
+          <div id="f-perf"></div>
+        </div>
+
+        <div class="group">
+          <h1>Accelerators</h1>
+          <div id="f-acc"></div>
+        </div>
+      </div> <!-- cierre del panel -->
+    </aside>
+
+    <main class="grid-wrap">
+      <div class="grid-header">
+        <div></div>
+        <div class="col">2007–2015</div>
+        <div class="col">2016–2020</div>
+        <div class="col">2021–2025</div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </main>
+  </div>
+
+  <!-- Modal DOI -->
+  <div id="modal-backdrop" class="modal-backdrop"></div>
+  <div id="modal" class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Reference data</div>
+      <button id="modal-close" class="btn">Close</button>
+    </div>
+    <div class="modal-body">
+      <div><span class="muted">ID:</span> <span id="m-id"></span></div>
+      <div><span class="muted">Title:</span> <span id="m-title"></span></div>
+      <div><span class="muted">Year:</span> <span id="m-year"></span></div>
+      <div><span class="muted">Authors:</span> <span id="m-authors"></span></div>
+      <div><span class="muted">Link:</span> <a id="m-link" href="#" target="_blank" rel="noopener noreferrer">Open</a></div>
+      <div id="m-empty" class="empty" style="display:none">No DOI available.</div>
+      <hr class="modal-divider">
+      <div id="m-sections" class="modal-sections"></div>
+    </div>
+  </div>
+
+  <script src="data/data.js"></script>
+  <script src="data/ref_modal.js"></script>
+  <script>
+    const $ = (s, el=document)=> el.querySelector(s);
+    const $$ = (s, el=document)=> Array.from(el.querySelectorAll(s));
+
+    // Filters UI
+    const VARS = DATA.meta.variableTypes;
+    const PERF = DATA.meta.performanceObjectives;
+    const ACC  = DATA.meta.acceleratorCategories;
+
+    function makeChecks(container, list, group){
+      list.forEach((name, idx) => {
+        const id = group + "-" + idx;
+        const row = document.createElement("div");
+        row.className = "chk";
+        row.innerHTML = '<input type="checkbox" id="'+id+'" data-name="'+name+'" checked> <label for="'+id+'">'+name+'</label>';
+        container.appendChild(row);
+      });
+    }
+    makeChecks($("#f-vars"), VARS, "vars");
+    makeChecks($("#f-perf"), PERF, "perf");
+    makeChecks($("#f-acc"),  ACC,  "acc");
+
+    // Build ref index
+    const refIndex = {};
+    function addRefSet(refId, name, key){
+      if(!refIndex[refId]) refIndex[refId] = {year:null, tasks:new Set(), vars:new Set(), perf:new Set(), acc:new Set()};
+      refIndex[refId][key].add(name);
+    }
+
+    // Years
+    Object.entries(DATA.DOI).forEach(([id, info]) => {
+      if(!refIndex[id]) refIndex[id] = {year:null, tasks:new Set(), vars:new Set(), perf:new Set(), acc:new Set()};
+      const y = parseInt(info.Year, 10);
+      if(!isNaN(y)) refIndex[id].year = y;
+    });
+
+    // Tasks
+    ["VARIABLES","PERFORMANCE OBJECTIVES","ACCELERATORS"].forEach(ds => {
+      const map = DATA.REF_MODAL?.[ds] || {};
+      Object.entries(map).forEach(([refId, tasks]) => {
+        if(!refIndex[refId]) refIndex[refId] = {year:null, tasks:new Set(), vars:new Set(), perf:new Set(), acc:new Set()};
+        tasks.forEach(t => refIndex[refId].tasks.add(t.n));
+      });
+    });
+
+    // Categories
+    Object.entries(DATA.VARIABLES || {}).forEach(([varType, scales]) => {
+      Object.values(scales).forEach(stages => {
+        Object.values(stages).forEach(node => {
+          (node.refs||[]).forEach(r => addRefSet(String(r), varType, "vars"));
+        });
+      });
+    });
+    Object.entries(DATA.PERFORMANCE_OBJECTIVES || {}).forEach(([obj, scales]) => {
+      Object.values(scales).forEach(stages => {
+        Object.values(stages).forEach(node => {
+          (node.refs||[]).forEach(r => addRefSet(String(r), obj, "perf"));
+        });
+      });
+    });
+    Object.entries(DATA.ACCELERATORS || {}).forEach(([accCat, scales]) => {
+      Object.values(scales).forEach(stages => {
+        Object.values(stages).forEach(node => {
+          const all = node && node["All"];
+          (all && all.refs || []).forEach(r => addRefSet(String(r), accCat, "acc"));
+        });
+      });
+    });
+
+    // Year bins
+    const BINS = [
+      {label:"2007–2015", min:2007, max:2015},
+      {label:"2016–2020", min:2016, max:2020},
+      {label:"2021–2025", min:2021, max:2025},
+    ];
+    function yearBin(y){ for(const b of BINS) if(y>=b.min && y<=b.max) return b.label; return null; }
+
+    // Filter state
+    const state = {
+      rel: true,
+      vars: new Set(VARS),
+      perf: new Set(PERF),
+      acc:  new Set(ACC),
+      highlights: new Set(["40","109","57","47","58"])
+    };
+
+    $("#rel-ex").addEventListener("change", (e)=>{ state.rel = e.target.checked; render(); });
+    $$("#f-vars input[type=checkbox]").forEach(ch => ch.addEventListener("change", e => {
+      const name = e.target.dataset.name; if(e.target.checked) state.vars.add(name); else state.vars.delete(name); render();
+    }));
+    $$("#f-perf input[type=checkbox]").forEach(ch => ch.addEventListener("change", e => {
+      const name = e.target.dataset.name; if(e.target.checked) state.perf.add(name); else state.perf.delete(name); render();
+    }));
+    $$("#f-acc input[type=checkbox]").forEach(ch => ch.addEventListener("change", e => {
+      const name = e.target.dataset.name; if(e.target.checked) state.acc.add(name); else state.acc.delete(name); render();
+    }));
+
+    
+
+function matchesFilters(refId){
+  const rec = refIndex[refId];
+  if(!rec) return false;
+
+  // Si alguna familia no tiene NINGUNA opción seleccionada, no se muestra nada
+  if (state.vars.size === 0 || state.perf.size === 0 || state.acc.size === 0) {
+    return false;
+  }
+
+  // Un grupo está "activo" solo si NO tiene todas sus opciones marcadas
+  const activeVars = state.vars.size < VARS.length;
+  const activePerf = state.perf.size < PERF.length;
+  const activeAcc  = state.acc.size  < ACC.length;
+
+  // Si ningún grupo está activo (todo marcado en todos), no hay filtros -> mostrar todo
+  if(!activeVars && !activePerf && !activeAcc) return true;
+
+  // AND entre los grupos activos: cada grupo activo debe hacer match
+  const matchVars = !activeVars || ([...rec.vars].some(v => state.vars.has(v)));
+  const matchPerf = !activePerf || ([...rec.perf].some(v => state.perf.has(v)));
+  const matchAcc  = !activeAcc  || ([...rec.acc].some(v  => state.acc.has(v)));
+
+  return matchVars && matchPerf && matchAcc;
+}
+
+
+
+    const gridEl = $("#grid");
+    function render(){
+      gridEl.innerHTML = "";
+      for(let task=1; task<=4; task++){
+        const label = document.createElement("div");
+        label.className = "row-label";
+        label.textContent = task + " Task" ;
+        gridEl.appendChild(label);
+
+        BINS.forEach(bin => {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          const list = document.createElement("div");
+          list.className = "refs";
+
+          const ids = Object.keys(refIndex).filter(id => {
+            const r = refIndex[id];
+            const yb = yearBin(r.year || 0);
+            return yb === bin.label && r.tasks.has(task) && matchesFilters(id);
+          }).sort((a,b) => parseInt(a,10)-parseInt(b,10));
+
+          ids.forEach(id => {
+            const btn = document.createElement("button");
+            btn.className = "ref-btn" + (state.rel && state.highlights.has(id) ? " hl" : "");
+            btn.textContent = id;
+            btn.addEventListener("click", () => openRefModalCombined(id));
+            list.appendChild(btn);
+          });
+
+          cell.appendChild(list);
+          gridEl.appendChild(cell);
+        });
+      }
+    }
+
+    function openRefModalCombined(refId){
+      const info = DATA.DOI[refId] || {};
+      const backdrop = document.getElementById("modal-backdrop");
+      const modal    = document.getElementById("modal");
+      const mId      = document.getElementById("m-id");
+      const mTitle   = document.getElementById("m-title");
+      const mYear    = document.getElementById("m-year");
+      const mAuthors = document.getElementById("m-authors");
+      const mLink    = document.getElementById("m-link");
+      const mEmpty   = document.getElementById("m-empty");
+      const mSections= document.getElementById("m-sections");
+
+      mId.textContent = refId;
+      mTitle.textContent = info.Title||"";
+      mYear.textContent = info.Year||"";
+      mAuthors.textContent = info.Authors||"";
+      if(info.Link){ mLink.href=info.Link; mLink.style.pointerEvents="auto"; mLink.style.opacity="1"; if(mEmpty) mEmpty.style.display="none"; }
+      else { mLink.href="#"; mLink.style.pointerEvents="none"; mLink.style.opacity="0.6"; if(mEmpty) mEmpty.style.display="block"; }
+
+      mSections.innerHTML = "";
+      const srcVars = DATA.REF_MODAL["VARIABLES"][refId] || [];
+      const srcPerf = DATA.REF_MODAL["PERFORMANCE OBJECTIVES"][refId] || [];
+      const srcAcc  = DATA.REF_MODAL["ACCELERATORS"][refId] || [];
+
+      const taskNums = new Set();
+      srcVars.forEach(t => taskNums.add(t.n));
+      srcPerf.forEach(t => taskNums.add(t.n));
+      srcAcc.forEach(t => taskNums.add(t.n));
+      const ordered = [...taskNums].filter(n=>n>=1 && n<=4).sort((a,b)=>a-b);
+
+      if(!ordered.length){
+        const none=document.createElement("div");
+        none.className="empty";
+        none.textContent="No extra data for this reference.";
+        mSections.appendChild(none);
+      } else {
+        ordered.forEach(n => {
+          const wrap=document.createElement("div");
+          wrap.style.border="1px solid #e2e8f0";
+          wrap.style.borderRadius="12px";
+          wrap.style.padding="10px";
+
+          const h=document.createElement("div");
+          h.textContent="Task "+n;
+          h.style.fontWeight="700";
+          h.style.marginBottom="6px";
+          wrap.appendChild(h);
+
+          // META
+          const metas=[];
+          [srcVars, srcPerf, srcAcc].forEach(arr => {
+            const t = arr.find(x => x.n===n);
+            if(t && Array.isArray(t.sections)){
+              t.sections.forEach(sec => {
+                const title = String(sec.title||"");
+                if(title.startsWith("Design scale:") || title.startsWith("Design stage:") || title.startsWith("Type of problem:") || title.startsWith("Type of change:")){
+                  if(!metas.some(m => m.title===title)) metas.push({title, text:sec.text||""});
+                }
+              });
+            }
+          });
+          metas.forEach(sec => {
+            const line=document.createElement("div");
+            const title=String(sec.title);
+            const idx=title.indexOf(":");
+            const label = idx>=0? title.slice(0,idx) : title;
+            const value = idx>=0? title.slice(idx+1).trim() : (sec.text||"");
+            if(!value) return;
+            line.innerHTML = "<strong>"+label+":</strong> "+value;
+            wrap.appendChild(line);
+          });
+          if(metas.length){
+            const divider = document.createElement("hr");
+            divider.style.margin="8px 0";
+            divider.style.border="none";
+            divider.style.borderTop="1px solid #e2e8f0";
+            wrap.appendChild(divider);
+          }
+
+          // Helper para título + contenido + separador
+          function addFamily(titleText, contentFn, isLast=false){
+            const fam = document.createElement("div");
+            fam.style.fontWeight="200";
+            fam.style.margin = "4px 0 6px 0";
+            fam.textContent = titleText;
+            fam.style.textTransform = "uppercase";
+            fam.style.fontSize =  "12px";
+            fam.style.textAlign = "right";
+            wrap.appendChild(fam);
+
+            contentFn();
+
+            if(!isLast){
+              const sep = document.createElement("hr");
+              sep.style.margin="8px 0";
+              sep.style.border="none";
+              sep.style.borderTop="1px solid #e2e8f0";
+              wrap.appendChild(sep);
+            }
+          }
+
+          // VARIABLES
+          addFamily("Variables", () => {
+            const tv = srcVars.find(x => x.n===n);
+            if (tv){
+              if (tv.title && tv.text){
+                const st=document.createElement("div"); st.style.fontWeight="600"; st.textContent=tv.title;
+                const p=document.createElement("div"); p.style.whiteSpace="pre-wrap"; p.style.margin="6px 0 10px 0"; p.textContent=tv.text;
+                wrap.appendChild(st); wrap.appendChild(p);
+              }
+              if (Array.isArray(tv.sections)){
+                tv.sections.forEach(sec => {
+                  if(!sec.text || String(sec.text).trim()==="") return;
+                  const st=document.createElement("div"); st.style.fontWeight="600"; st.textContent=sec.title;
+                  const p=document.createElement("div"); p.style.whiteSpace="pre-wrap"; p.style.margin="6px 0 10px 0"; p.textContent=sec.text;
+                  wrap.appendChild(st); wrap.appendChild(p);
+                });
+              }
+            }
+          });
+
+          // PERFORMANCE OBJECTIVES
+          addFamily("Performance objectives", () => {
+            const tp = srcPerf.find(x => x.n===n);
+            if (tp && Array.isArray(tp.sections)){
+              tp.sections.forEach(sec => {
+                if(!sec.text || String(sec.text).trim()==="") return;
+                const st=document.createElement("div"); st.style.fontWeight="600"; st.textContent=sec.title;
+                const p=document.createElement("div"); p.style.whiteSpace="pre-wrap"; p.style.margin="6px 0 10px 0"; p.textContent=sec.text;
+                wrap.appendChild(st); wrap.appendChild(p);
+              });
+            }
+          });
+
+          // ACCELERATORS (última familia -> sin separador extra)
+          addFamily("Accelerators", () => {
+            const ta = srcAcc.find(x => x.n===n);
+            if (ta && Array.isArray(ta.sections)){
+              ta.sections.forEach(sec => {
+                if(!sec.text || String(sec.text).trim()==="") return;
+                const st=document.createElement("div"); st.style.fontWeight="600"; st.textContent=sec.title;
+                const p=document.createElement("div"); p.style.whiteSpace="pre-wrap"; p.style.margin="6px 0 10px 0"; p.textContent=sec.text;
+                wrap.appendChild(st); wrap.appendChild(p);
+              });
+            }
+          }, true);
+
+          mSections.appendChild(wrap);
+        });
+      }
+
+      backdrop.style.display="block"; modal.style.display="block";
+      document.getElementById("modal-backdrop").onclick = () => { backdrop.style.display="none"; modal.style.display="none"; };
+      document.getElementById("modal-close").onclick = () => { backdrop.style.display="none"; modal.style.display="none"; };
+    }
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Matriz interactiva — Performance & Variables</title>
+<style>
+  :root{
+    --bg:#f8fafc; --panel:#ffffff; --muted:#9297af; --text:#0d1219;
+    --accent:#0284c7; --accent2:#0ea5e9; --accent3:#1e65a3;
+    --card:#f1f5f9; --dim:0.25;
+    --radius:12px; --shadow:0 6px 18px rgba(2,8,23,0.06);
+  }
+  *{box-sizing:border-box} html,body{height:100%} body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:#f1f5f9; color:var(--text);}
+  
+  .title-bar{display:flex; align-items:center; justify-content: space-between; gap:8px; padding:8px 10px}
+  .home-btn , .info-btn {display:inline-flex; align-items:center; justify-content:center; font-size:14px; border-radius:10px; background:#f8fafc; text-decoration:none; border:1px solid #cbd5e1; color:#1f4d89; padding:4px 6px; cursor:pointer}
+  .title-panel{ flex:1; }
+  .title-panel  h1{margin:0; font-size:14px; font-weight:600; color:#1f4d89; text-align: left}
+  
+  .muted {color: var(--muted); font-weight: 300; opacity: 0.95;}
+
+  .app{display:grid; grid-template-columns: 450px 1fr; gap:10px; padding:10px; }
+  .panel{background:var(--panel); border:1px solid #e2e8f0; border-radius:var(--radius); padding:14px; gap: 10px; box-shadow: var(--shadow);}
+  .panel h1{margin:0 0 8px 0; font-size:16px}
+
+  /* SIDEBAR */
+  .sub{color:#374151; font-size:13px; margin-bottom:10px; line-height: 1,2; padding-bottom: 6px ; padding-top: 6px;}
+  label{font-size:13px; color:#374151; display:block; margin:3px 0 2px}
+  select{width:100%; padding:8px 10px; background:#f8fafc; color:var(--text); border:1px solid #e2e8f0; border-radius:10px}
+  .sub2{font-size:11px; color:#374151;font-style: italic; margin-bottom:6px}
+  .option-row{display:flex; gap:3px; flex-wrap:wrap; margin:2px 0 4px}
+  .option{display:flex; gap:2px; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 4px; cursor:pointer}
+  .btn{display:inline-flex; gap:8px; align-items:center; font-size:12px; padding:4px 6px; border-radius:10px; border:1px solid #cbd5e1; background:#f8fafc; color:var(--accent3); cursor:pointer; text-decoration:none;}
+  .btn-group {display: flex; gap: 8px; margin-top: 8px; }
+  /* CENTER */
+  .grid-wrap{background:var(--panel); border:1px solid #e2e8f0; border-radius:var(--radius); padding:12px; box-shadow: var(--shadow);}
+  .grid-header{display:grid; grid-template-columns: 180px repeat(3, 1fr); gap:8px; padding:10px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; margin-bottom:8px}
+  .grid-header .stage{font-size:16px; font-weight:700; color:#1f2937; text-align:center}
+  .grid{display:grid; grid-template-columns: 150px repeat(3, 1fr); gap:8px; }
+  .row-label{display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; color:#0d0f11; font-weight:700;}
+  .cell{position:relative; border-radius:14px; padding:6px; background:var(--card); border:1px solid #e2e8f0; overflow:hidden; min-height:50px; display:flex; flex-direction:column; gap:8px}
+  .cell:hover{border-color:#94a3b8; box-shadow:0 0 0 2px rgba(88,166,255,0.15) inset}
+  /* VARIABLES/ACCELERATORS */
+  .subgrid{display:grid; gap:6px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); align-content:start}
+  .subcell{position:relative; border:1px solid #cbd5e1; border-radius:12px; padding:5px 6px; background:#f8fafc; cursor:pointer; min-height:30px; display:flex; align-items:center; justify-content:space-between; gap:8px; box-shadow: 0 6px 20px rgba(2,8,23,0.1)}
+  .subcell .label{font-size:13px; color:#58636d; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:65%}
+  .subcell .value{font-size:20px; font-weight:800;}
+  .bar{position:absolute; inset:auto 0 0 0; height:4px; background:linear-gradient(90deg, var(--accent2), var(--accent)); opacity:0.5}
+  /* PERFORMANCE bubbles */
+  .bubble-grid{display:grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows:56px; gap:8px; align-content:start}
+  .slot{display:flex; align-items:center; justify-content:center; flex-direction:column; gap:2px; min-height:56px;}
+  .slot.off .bubble .fill{display:none;}
+  .bubble{position:relative; width:44px; height:44px; border-radius:50%;}
+  .bubble .base{position:absolute; inset:0; border-radius:50%; border:1.5px dashed rgba(15,23,42,0.18);}
+  .bubble .fill{position:absolute; inset:0; border-radius:50%; background: var(--c, #64748b); opacity:0.9; transform: scale(var(--s, 0)); transform-origin:center; transition: transform 180ms ease-out;}
+  .bubble:hover{border-color:#dfe1e6; box-shadow:10px 10px 10px 10px rgba(255, 255, 255, 0.99) inset;cursor: pointer;}
+  .pct{display:block; font-size:11px; font-weight:600; color:#0b0b0b;}
+  .dimmed{opacity:var(--dim); filter:saturate(0.6) blur(0.2px)}
+  /* Filters */
+  .chips{display:flex; flex-wrap:wrap; gap:2px}
+  .chip{display:inline-flex; align-items:center; gap:2px; padding:3px 4px; border-radius:999px; border:1px solid #e2e8f0; background:#f8fafc; cursor:pointer; font-size:12px}
+  .dot{width:12px; height:12px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.1)}
+  .multi {position:relative;} .multi-toggle {width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:2px 4px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; cursor:pointer; font-size:11px}
+  .multi-panel {position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 12px 30px rgba(2,8,23,0.18); padding:4px; display:none; z-index:40; max-height:240px; overflow:auto}
+  .multi-row{display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:8px; cursor:pointer; font-size:12px}
+  .multi-row:hover{background:#f1f5f9}
+  .multi-actions{display:flex; justify-content:space-between; gap:8px; margin-top:6px}
+  /* Details (preserve original) */
+  .details {margin-top: 10px;}
+  .details h2{margin:0 0 6px 0; font-size:16px}
+  .details .kvs{display:grid; grid-template-columns:auto 1fr; gap:4px 8px; font-size:12px; font-weight:300px; margin-bottom:10px; color:var(--accent3)}
+  .refs{display:flex; flex-wrap:wrap; gap:8px; max-height:30vh; overflow:auto; padding-right:6px}
+  .ref{font-size:12px; background:#f8fafc; border:1px solid #8ab6e2; color:rgb(22, 60, 91); padding:6px 8px; border-radius:999px; cursor:pointer}
+  .ref:hover{border-color:#dfe1e6; box-shadow:10px 10px 10px 10px rgba(255, 255, 255, 0.99) inset;cursor: pointer;}
+  .empty{font-size:12px; color:#6b7280}
+  /* Modal DOI */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55);z-index: 50;}
+  .modal {display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; color: #1e65a3;
+    border: 1px solid #e2e8f0; border-radius: 16px; width: 80%; z-index: 60; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);}
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid #e2e8f0;}
+  .modal-title { font-weight: 700;}
+  .btn-close { border-color: #cbd5e1; }
+  .modal-body { padding: 16px; display: grid; gap: 8px; font-size: 12px; font-weight: 300;}
+  .modal-divider { margin: 8px 0; border: none; border-top: 1px solid #e2e8f0;}
+  .modal-sections { display: grid ;grid-template-columns: 1fr 1fr 1fr 1fr;  gap: 6px 12px; font-size: 12px; line-height: 1.2;padding-bottom: 4px; max-height: 60vh; overflow:auto;}
+  /* Info popover */
+  .info-pop{display:none; position:fixed; top:44px; right:12px; max-width:80%; overflow: auto; max-width:90vw; background:#fff; border:1px solid #e2e8f0; border-radius:12px; box-shadow:0 16px 40px rgba(2,8,23,0.2); z-index:70; padding:12px;}
+  .info-pop h3{margin:0 0 8px 0; font-size:14px; color:#0f172a}
+  .map-grid{display:grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows:40px; gap:6px}
+  .map-slot{display:flex; align-items:center; gap:8px; padding:6px; border:1px dashed #e2e8f0; border-radius:8px; background:#f8fafc}
+  .map-dot{width:12px; height:12px; border-radius:50%; border:1px solid rgba(0,0,0,0.1)}
+  .map-name{font-size:12px; color:#1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .map-n{font-size:12px; font-weight:800; color:#0f172a}
+</style>
+</head>
+<body>
+  <div class="title-bar">
+    <a href="index.html" class="home-btn">🏠</a>
+    <div class="title-panel"><h1>Digital workflows for informed decision making in building envelope design: A systematic literature review.</h1></div>
+    <button class="info-btn" id="info-btn">Legend of subcategories</button>
+  </div>
+
+  <div class="app">
+    <div class="left">
+      <aside class="panel">
+        <h1 style="margin:0 0 6px 0">Matrix of variables, performance objectives and accelerators classified by stage and scale</h1>
+        <div class="sub" style="margin-bottom:2px">(1) Choose a <b>dataset</b>.</div>
+        <div class="option-row">
+          <label class="option"><input type="radio" name="ds" value="PERFORMANCE OBJECTIVES" checked> <span>PERFORMANCE OBJECTIVES</span></label>
+          <label class="option"><input type="radio" name="ds" value="VARIABLES"> <span>VARIABLES</span></label>
+          <label class="option"><input type="radio" name="ds" value="ACCELERATORS"> <span>ACCELERATORS</span></label>
+        </div>
+
+        <div class="sub" style="margin-top:4px; margin-bottom:2px">(2) Show specific <b>filters</b>.</div>
+
+        <label id="ptype-label" class="sub2" style="display:none; margin-top:1px; text-transform: uppercase; text-align: center; color: var(--accent3)"><strong>Problem type</strong></label>
+        <select id="ptype" style="display:none; text-transform: uppercase; margin-bottom: 14px;"></select>
+
+        <label class="sub2" id="cat-label">Performance objectives</label>
+        <select id="category"></select>
+
+        <div id="po-filters" style="display:none; margin-top:4px">
+          <label class="sub2" style="margin-top:6px">Categories </label>
+          <div class="multi" id="po-cat-chips"></div>
+          <label class="sub2" style="margin-top:6px">Subcategories </label>
+          <div class="multi" id="po-subcats">
+            <div class="multi-toggle" id="po-subcats-toggle">
+              <span id="po-subcats-summary">All subcategories selected</span><span>▾</span>
+            </div>
+            <div class="multi-panel" id="po-subcats-panel"></div>
+          </div>
+        </div>
+
+        <div class= "multi" style="height:2px"></div>
+        <label class="sub2" >Stage</label>
+        <select id="stage"><option value="__ALL__">All</option></select>
+
+        <label class="sub2" >Scale</label>
+        <select id="scale"><option value="__ALL__">All</option></select>
+
+        <div style="height:10px"></div>
+        <button class="btn" id="reset">Reset</button>
+      </aside>
+
+      <section class="panel details" id="details">
+        <h2>Details</h2>
+        <div class="sub">Press any <b>cell</b> to check possible references. Press the <b>reference ID</b> to see more information and direct link <b>DOI</b>. </div>
+        <div class="kvs" id="kvs"></div>
+        <div class="refs" id="refs"></div>
+        <div class="empty" id="empty">There is no registered references for this combination.</div>
+        <div style="margin-top:12px">
+          <div class="sub">Overall analysis of each reference ID can be done at <b>"See all references"</b> page </div>
+          <div class="btn-group">
+            <a class="btn" id="see-all-refs" href="All_refs.html">See all references</a>
+            <a class="btn" id="Go-to-register" href="KPI_register.html">See all registered KPIs</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <main class="grid-wrap">
+      <div class="grid-header" id="grid-header"></div>
+      <div class="grid" id="grid"></div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-backdrop" class="modal-backdrop"></div>
+  <div id="modal" class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Reference data</div>
+      <button id="modal-close" class="btn btn-close">Close</button>
+    </div>
+    <div class="modal-body">
+      <div><span class="muted">ID:</span> <span id="m-id"></span></div>
+      <div><span class="muted">Title:</span> <span id="m-title"></span></div>
+      <div><span class="muted">Year:</span> <span id="m-year"></span></div>
+      <div><span class="muted">Authors:</span> <span id="m-authors"></span></div>
+      <div><span class="muted">Link:</span> <a id="m-link" href="#" target="_blank" rel="noopener noreferrer">Open</a></div>
+      <div id="m-empty" class="empty">No DOI available.</div>
+      <hr class="modal-divider">
+      <div id="m-sections" class="modal-sections"></div>
+    </div>
+  </div>
+
+  <div class="info-pop" id="info-pop">
+    <h3>Subcategory map (5×3)</h3>
+    <div class="map-grid" id="map-grid"></div>
+  </div>
+
+  <script src="data/data.js"></script>
+  <script src="data/ref_modal.js"></script>
+  <script>
+
+
+  const $ = (s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+  const dsRadios=$$('input[name="ds"]'); const catLabel=$("#cat-label"); const catSelect=$("#category");
+  const stageSelect=$("#stage"); const scaleSelect=$("#scale"); const ptypeSelect=$("#ptype");
+  const grid=$("#grid"); const header=$("#grid-header"); const kvs=$("#kvs"); const refsBox=$("#refs"); const emptyMsg=$("#empty");
+  const infoBtn=$("#info-btn"); const infoPop=$("#info-pop"); const mapGrid=$("#map-grid");
+  const poFiltersWrap=$("#po-filters"); const poCatChips=$("#po-cat-chips");
+  const subcatsWrap=$("#po-subcats"); const subcatsToggle=$("#po-subcats-toggle");
+  const subcatsPanel=$("#po-subcats-panel"); const subcatsSummary=$("#po-subcats-summary");
+
+  const META = DATA.meta;
+  META.stages.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;stageSelect.appendChild(o)});
+  META.scales.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;scaleSelect.appendChild(o)});
+
+  let STATE={dataset:"PERFORMANCE OBJECTIVES",category:"__ALL__",highlightStage:"__ALL__",highlightScale:"__ALL__",ptype:"__ALL__",poSelectedCategories:new Set(),poSelectedSubcats:new Set()};
+
+  const isPO=()=>STATE.dataset==="PERFORMANCE OBJECTIVES";
+  const isSubcatMode=()=>isPO() && DATA.PERFORMANCE_OBJECTIVES && DATA.PERFORMANCE_OBJECTIVES.__mode==="subcategories";
+
+  function setDataset(ds){
+    STATE.dataset=ds;
+    if(ds==="PERFORMANCE OBJECTIVES"){
+      if(isSubcatMode()){
+        catLabel.style.display="none"; catSelect.style.display="none"; $("#ptype-label").style.display="none"; ptypeSelect.style.display="none";
+        poFiltersWrap.style.display="block"; buildPOFiltersOnce();
+      } else {
+        catLabel.textContent="Performance objectives";
+        fillOptions(catSelect, ["__ALL__", ...DATA.meta.performanceObjectives], STATE.category);
+        $("#ptype-label").style.display="none"; ptypeSelect.style.display="none"; poFiltersWrap.style.display="none";
+        catLabel.style.display="block"; catSelect.style.display="block";
+      }
+    } else if (ds==="VARIABLES"){
+      catLabel.textContent="Variable types";
+      fillOptions(catSelect, ["__ALL__", ...DATA.meta.variableTypes], STATE.category);
+      $("#ptype-label").style.display="none"; ptypeSelect.style.display="none"; poFiltersWrap.style.display="none";
+      catLabel.style.display="block"; catSelect.style.display="block";
+    } else if (ds==="ACCELERATORS"){
+      catLabel.textContent="Accelerator types";
+      fillOptions(catSelect, ["__ALL__", ...(DATA.meta.acceleratorCategories||[])], STATE.category);
+      $("#ptype-label").style.display="block"; ptypeSelect.style.display="block"; poFiltersWrap.style.display="none";
+      catLabel.style.display="block"; catSelect.style.display="block";
+      const PTYPES=[...(DATA.meta.problemTypes || ["All","Exploration","Optimization"])];
+      fillOptions(ptypeSelect, PTYPES, STATE.ptype || "__ALL__");
+    }
+    render();
+  }
+
+  function buildPOFiltersOnce(){
+    const catsNice=DATA.meta.performanceObjectives;
+    if(STATE.poSelectedCategories.size===0){catsNice.forEach(n=>STATE.poSelectedCategories.add(n));}
+    const subs=DATA.meta.performanceSubcategories||[];
+    if(STATE.poSelectedSubcats.size===0){subs.forEach(sc=>STATE.poSelectedSubcats.add(sc));}
+    // category chips
+    const colorMap=DATA.meta.performanceCategoryColors||{};
+    const catNiceToUpper=(n)=>({"Energy":"ENERGY","Economy":"ECONOMY","Environment":"ENVIRONMENT","Thermal comfort":"THERMAL COMFORT","Visual comfort":"VISUAL COMFORT","Other":"OTHER"}[n]||n.toUpperCase());
+    poCatChips.innerHTML="";
+
+    DATA.meta.performanceObjectives.forEach(catNice=>{
+      const up=catNiceToUpper(catNice);
+      const chip=document.createElement('label'); chip.className="chip"; chip.title="Toggle category";
+      chip.innerHTML='<span class="dot" style="background:'+(colorMap[up]||"#94a3b8")+'"></span><input type="checkbox" checked> <span style="font-weight:400;text-transform:uppercase">'+catNice+ '</span>';
+      const input=chip.querySelector("input"); input.checked=STATE.poSelectedCategories.has(catNice);
+      input.addEventListener("change",()=>{ if(input.checked) STATE.poSelectedCategories.add(catNice); else STATE.poSelectedCategories.delete(catNice); render(); });
+      poCatChips.appendChild(chip);
+    });
+    // subcats multi-dropdown
+    buildSubcatDropdown();
+    // info map
+    buildInfoMap();
+  }
+
+  function buildSubcatDropdown(){
+    const subs=DATA.meta.performanceSubcategories||[];
+    subcatsPanel.innerHTML="";
+
+    const actions=document.createElement('div'); actions.className="multi-actions";
+    const allBtn=document.createElement('button'); allBtn.className="btn"; allBtn.textContent="Select all"; allBtn.addEventListener("click",()=>{ STATE.poSelectedSubcats=new Set(subs); buildSubcatDropdown(); updateSubcatsSummary(); render(); });
+    const noneBtn=document.createElement('button'); noneBtn.className="btn"; noneBtn.textContent="Clear all"; noneBtn.addEventListener("click",()=>{ STATE.poSelectedSubcats=new Set(); buildSubcatDropdown(); updateSubcatsSummary(); render(); });
+    actions.appendChild(allBtn); actions.appendChild(noneBtn); subcatsPanel.appendChild(actions);
+    
+    subs.forEach((sub,idx)=>{
+      const entry=DATA.PERFORMANCE_OBJECTIVES.subcategories[sub]; const color=entry?.color || "#94a3b8";
+      const row=document.createElement('label'); row.className="multi";
+      row.innerHTML='<span class="dot" style="background:'+color+'"></span><input type="checkbox"> <span>'+sub+' ('+(idx+1)+')</span>';
+      const input=row.querySelector('input'); input.checked=STATE.poSelectedSubcats.has(sub);
+      input.addEventListener("change",()=>{ if(input.checked) STATE.poSelectedSubcats.add(sub); else STATE.poSelectedSubcats.delete(sub); updateSubcatsSummary(); render(); });
+      subcatsPanel.appendChild(row);
+    });
+    updateSubcatsSummary();
+  }
+  function updateSubcatsSummary(){
+    const total=(DATA.meta.performanceSubcategories||[]).length; const sel=STATE.poSelectedSubcats.size; 
+    subcatsSummary.textContent = sel===0 ? "No subcategory selected" : (sel===total ? "All subcategories selected" : (sel+" selected"));
+  }
+  function buildInfoMap(){
+    mapGrid.innerHTML=""; const subs=DATA.meta.performanceSubcategories||[];
+    subs.forEach((sub,idx)=>{
+      const entry=DATA.PERFORMANCE_OBJECTIVES.subcategories[sub]; const color=entry?.color || "#94a3b8";
+      const slot=document.createElement('div'); slot.className="map-slot";
+      slot.innerHTML='<span class="map-n">('+(idx+1)+')</span><span class="map-dot" style="background:'+color+'"></span><span class="map-name">'+sub+'</span>';
+      mapGrid.appendChild(slot);
+    });
+  }
+  
+  function fillOptions(select, options, current){
+    select.innerHTML=""; options.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=(v==="__ALL__")?"All":v; if(v===current) o.selected=true; select.appendChild(o);});
+  }
+
+  function asPercent(v){ if(v==null || isNaN(v)) return "—"; const pct=v*100; const d=pct<10?1:0; return pct.toFixed(d)+"%"; }
+
+  function renderHeader(){
+    header.innerHTML=""; const blank=document.createElement('div'); header.appendChild(blank);
+    META.stages.forEach(st=>{const d=document.createElement('div'); d.className="stage"; d.textContent=st; header.appendChild(d);});
+  }
+  function getCategoriesForRender(){
+    const {dataset, category}=STATE; let all=[];
+    if(dataset==="PERFORMANCE OBJECTIVES") all=DATA.meta.performanceObjectives;
+    else if(dataset==="VARIABLES") all=DATA.meta.variableTypes;
+    else if(dataset==="ACCELERATORS") all=DATA.meta.acceleratorCategories;
+    return (category==="__ALL__")? all : [category];
+  }
+  function readDatum(dataset, cat, scale, stage, ptype){
+    if (dataset==="PERFORMANCE OBJECTIVES" && !isSubcatMode()){
+      return (DATA.PERFORMANCE_OBJECTIVES?.[cat]?.[scale]?.[stage]) || { value:null, refs:[] };
+    } else if (dataset==="VARIABLES"){
+      return (DATA.VARIABLES?.[cat]?.[scale]?.[stage]) || { value:null, refs:[] };
+    } else if (dataset==="ACCELERATORS"){
+      const node = DATA.ACCELERATORS?.[cat]?.[scale]?.[stage] || {};
+      const t = (ptype && ptype !== "__ALL__") ? ptype : "All";
+      return node?.[t] || { value:null, refs:[] };
+    } else { return { value:null, refs:[] }; }
+  }
+
+  function render(){
+    renderHeader(); grid.innerHTML="";
+    const {dataset, highlightStage, highlightScale}=STATE;
+    META.scales.forEach(scale=>{
+      const label=document.createElement('div'); label.className="row-label"; label.textContent=scale; grid.appendChild(label);
+      META.stages.forEach(stage=>{
+        const cell=document.createElement('div'); cell.className="cell"; cell.dataset.scale=scale; cell.dataset.stage=stage;
+
+        if(isPO() && isSubcatMode()){
+          const grid15=document.createElement('div'); grid15.className="bubble-grid";
+          const subOrder=DATA.meta.performanceSubcategories||[];
+          subOrder.forEach((sub,idx)=>{
+            const entry=DATA.PERFORMANCE_OBJECTIVES.subcategories[sub]||{};
+            const catUpper=entry.category||"";
+            const catNice=({"ENERGY":"Energy","ECONOMY":"Economy","ENVIRONMENT":"Environment","THERMAL COMFORT":"Thermal comfort","VISUAL COMFORT":"Visual comfort","OTHERS":"Other"}[catUpper]||catUpper);
+            const allowedCat=STATE.poSelectedCategories.has(catNice);
+            const allowedSub=STATE.poSelectedSubcats.has(sub);
+            const node=(entry.scales && entry.scales[scale] && entry.scales[scale][stage]) ? entry.scales[scale][stage] : {value:null, refs:[]};
+            const v=Math.max(0, Math.min(1, Number(node.value||0))); const s=(v>0? Math.sqrt(v):0);
+            const color=entry.color || "#94a3b8";
+            const slot=document.createElement('div'); slot.className="slot"; if(!(allowedCat&&allowedSub)) slot.classList.add("off");
+            const bubble=document.createElement('div'); bubble.className="bubble";
+            const base=document.createElement('div'); base.className="base";
+            const fill=document.createElement('div'); fill.className="fill"; fill.style.setProperty("--s", String(s)); fill.style.setProperty("--c", color);
+            bubble.appendChild(base); bubble.appendChild(fill); slot.appendChild(bubble);
+            const pct=document.createElement('div'); pct.className="pct"; pct.textContent=asPercent(v); slot.appendChild(pct);
+            if(allowedCat && allowedSub){
+              slot.addEventListener("click",()=>showDetails({dataset:"PERFORMANCE OBJECTIVES", subcategory:sub, category:catNice, scale, stage, datum:node}));
+              slot.style.cursor="pointer"; slot.title=sub+" • "+asPercent(v)+" ("+(idx+1)+")";
+            } else { slot.style.cursor="default"; }
+            grid15.appendChild(slot);
+          });
+          // dim
+          const hs=highlightStage, hc=highlightScale; let keep=true;
+          if(hs==="__ALL__" && hc==="__ALL__") keep=true;
+          else if(hs!=="__ALL__" && hc==="__ALL__") keep=(stage===hs);
+          else if(hs==="__ALL__" && hc!=="__ALL__") keep=(scale===hc);
+          else keep=(stage===hs && scale===hc);
+          if(!keep) cell.classList.add("dimmed");
+          cell.appendChild(grid15);
+        } else {
+          const subgrid=document.createElement('div'); subgrid.className="subgrid";
+          const catList=getCategoriesForRender();
+          catList.forEach(cat=>{
+            const datum=readDatum(dataset, cat, scale, stage, STATE.ptype) || {value:null, refs:[]};
+            const vRaw=Number(datum.value ?? 0); const v=isFinite(vRaw)? Math.max(0, Math.min(1, vRaw)) : 0;
+            const sub=document.createElement('div'); sub.className="subcell";
+            const refCount=(Array.isArray(datum.refs)? datum.refs.length : 0);
+            sub.title=`${cat} • ${asPercent(v)}${refCount ? ` • ${refCount} REF${refCount>1?'s':''}` : ""}`;
+            const lab=document.createElement('div'); lab.className="label"; lab.textContent=cat;
+            const val=document.createElement('div'); val.className="value"; val.textContent=asPercent(v);
+            const bar=document.createElement('div'); bar.className="bar"; bar.style.width=(v*100)+"%";
+            sub.appendChild(lab); sub.appendChild(val); sub.appendChild(bar);
+            sub.addEventListener("click",()=>{
+              const effType=(dataset==="ACCELERATORS") ? ((STATE.ptype && STATE.ptype!=="__ALL__")? STATE.ptype : "All") : undefined;
+              showDetails({dataset, category:cat, scale, stage, datum, ptype:effType});
+            });
+            subgrid.appendChild(sub);
+          });
+          const hs=highlightStage, hc=highlightScale; let keep=true;
+          if(hs==="__ALL__" && hc==="__ALL__") keep=true;
+          else if(hs!=="__ALL__" && hc==="__ALL__") keep=(stage===hs);
+          else if(hs==="__ALL__" && hc!=="__ALL__") keep=(scale===hc);
+          else keep=(stage===hs && scale===hc);
+          if(!keep) cell.classList.add("dimmed");
+          cell.appendChild(subgrid);
+        }
+        grid.appendChild(cell);
+      });
+    });
+    showDetails(null);
+  }
+
+  function showDetails(payload){
+    kvs.innerHTML=""; refsBox.innerHTML=""; emptyMsg.style.display="block";
+    if(!payload) return;
+    const {dataset, category, subcategory, scale, stage, datum, ptype}=payload;
+
+    addKV("Dataset", dataset,kClass = "muted", vClass = "");
+    if(dataset==="PERFORMANCE OBJECTIVES" && subcategory){ addKV("Category", category); addKV("Subcategory", subcategory); }
+    else { addKV(dataset==="VARIABLES" ? "Variable" : (dataset==="ACCELERATORS"?"Accelerator":"Objective"), category); if(dataset==="ACCELERATORS"){ addKV("Problem type", ptype || "All"); } }
+    addKV("Scale", scale); addKV("Stage", stage); addKV("Frequency", asPercent(datum?.value));
+    if(datum?.refs && datum.refs.length){ emptyMsg.style.display="none"; datum.refs.forEach(r=>{ const chip=document.createElement('span'); chip.className='ref'; chip.textContent=r; chip.addEventListener("click",()=>openRefModal(String(r), STATE.dataset)); refsBox.appendChild(chip); }); }
+  }
+  function addKV(k,v){ 
+    const kEl=document.createElement('div'); kEl.textContent=k; kEl.className=kClass; 
+    const vEl=document.createElement('div'); vEl.textContent=v; vEl.className=vClass; 
+    kvs.appendChild(kEl); kvs.appendChild(vEl); }
+  
+  
+  function openRefModal(refId, dataset){
+      const map = DATA.DOI || {};
+      const info = map[refId];
+
+      const backdrop  = document.getElementById("modal-backdrop");
+      const modal     = document.getElementById("modal");
+      const mId       = document.getElementById("m-id");
+      const mTitle    = document.getElementById("m-title");
+      const mYear     = document.getElementById("m-year");
+      const mAuthors  = document.getElementById("m-authors");
+      const mLink     = document.getElementById("m-link");
+      const mEmpty    = document.getElementById("m-empty");
+      const mSections = document.getElementById("m-sections");
+
+      // --- DOI info ---
+      mId.textContent = refId;
+
+      if (info){
+        mTitle.textContent   = info.Title   || "";
+        mYear.textContent    = info.Year    || "";
+        mAuthors.textContent = info.Authors || "";
+
+        if (info.Link){
+          mLink.href = info.Link;
+          mLink.style.pointerEvents = "auto";
+          mLink.style.opacity = "1";
+        } else {
+          mLink.href = "#";
+          mLink.style.pointerEvents = "none";
+          mLink.style.opacity = "0.6";
+        }
+        if (mEmpty) mEmpty.style.display = "none";
+      } else {
+        mTitle.textContent = "";
+        mYear.textContent = "";
+        mAuthors.textContent = "";
+        mLink.href = "#";
+        mLink.style.pointerEvents = "none";
+        mLink.style.opacity = "0.6";
+        if (mEmpty) mEmpty.style.display = "block";
+      }
+
+      // --- Dataset-specific sections ---
+      mSections.innerHTML = "";
+      const modalMap = (DATA.REF_MODAL && dataset) ? (DATA.REF_MODAL[dataset] || {}) : {};
+      const tasks = modalMap[refId] || [];
+
+      console.log("dataset:", dataset, "tasks:", tasks);
+
+      if (tasks.length){
+        tasks.forEach(t => {
+          const wrapper = document.createElement("div");
+          wrapper.style.border = "1px solid #e2e8f0";
+          wrapper.style.borderRadius = "12px";
+          wrapper.style.padding = "10px";
+
+          const header = document.createElement("div");
+          header.textContent = "Task " + t.n;
+          header.style.fontWeight = "700";
+          header.style.color = "#0f172a";
+          header.style.marginBottom = "6px";
+          wrapper.appendChild(header);
+
+          // --- sections (meta primero, luego el resto) ---
+          if (t.sections && Array.isArray(t.sections)){
+            const META_PREFIXES = ["Design scale:", "Design stage:", "Type of problem:", "Type of change:"];
+            const isMeta = (title) => {
+              if (!title) return false;
+              const s = String(title).trim();
+              return META_PREFIXES.some(p => s.startsWith(p));
+            };
+
+            const metaSecs  = t.sections.filter(sec => isMeta(sec.title));
+            const otherSecs = t.sections.filter(sec => !isMeta(sec.title));
+
+            // Meta inline: "<strong>Label:</strong> value"
+            metaSecs.forEach(sec => {
+              const line = document.createElement("div");
+              let label = "", value = "";
+              const title = String(sec.title || "");
+              const text  = String(sec.text || "").trim();
+
+              if (title.includes(":")) {
+                const idx = title.indexOf(":");
+                label = title.slice(0, idx);
+                value = title.slice(idx + 1).trim();
+              } else {
+                label = title;
+                value = text;
+              }
+              if (!value) value = text;
+              if (!value) return;
+
+              line.innerHTML = "<strong>" + label + ":</strong> " + value;
+              wrapper.appendChild(line);
+            });
+
+            // --- Separador entre meta y resto ---
+            if (metaSecs.length) {
+              const divider = document.createElement("hr");
+              divider.style.margin = "8px 0";
+              divider.style.border = "none";
+              divider.style.borderTop = "1px solid #e2e8f0";
+              wrapper.appendChild(divider);
+            }
+
+            // Resto: título + párrafo debajo
+            otherSecs.forEach(sec => {
+              if (!sec.text || String(sec.text).trim() === "") return;
+              const st = document.createElement("div");
+              st.style.fontWeight = "600";
+              st.textContent = sec.title;
+              const p = document.createElement("div");
+              p.style.whiteSpace = "pre-wrap";
+              p.style.margin = "6px 0 10px 0";
+              p.textContent = sec.text;
+              wrapper.appendChild(st);
+              wrapper.appendChild(p);
+            });
+          }
+
+          // VARIABLES (si aplica): título + texto al final
+          if (t.title && t.text){
+            const st = document.createElement("div");
+            st.style.fontWeight = "600";
+            st.textContent = t.title;
+            const p = document.createElement("div");
+            p.style.whiteSpace = "pre-wrap";
+            p.style.margin = "6px 0 10px 0";
+            p.textContent = t.text;
+            wrapper.appendChild(st);
+            wrapper.appendChild(p);
+          }
+
+          // Añadir el task al modal
+          mSections.appendChild(wrapper);
+        });
+      } else {
+        const none = document.createElement("div");
+        none.className = "empty";
+        none.textContent = "No extra data for this reference in the selected dataset.";
+        mSections.appendChild(none);
+      }
+
+      // Mostrar modal
+      backdrop.style.display = "block";
+      modal.style.display = "block";
+    }
+
+  $("#modal-close").addEventListener("click",()=>{ $("#modal-backdrop").style.display="none"; $("#modal").style.display="none";});
+  $("#modal-backdrop").addEventListener("click",()=>{ $("#modal-backdrop").style.display="none"; $("#modal").style.display="none";});
+
+  infoBtn.addEventListener("click",()=>{ const v=infoPop.style.display==="block"; infoPop.style.display=v?"none":"block"; });
+  window.addEventListener("click",(e)=>{ if(!infoPop.contains(e.target) && e.target!==infoBtn){ infoPop.style.display="none"; } });
+
+  subcatsToggle.addEventListener("click",()=>{ const shown=subcatsPanel.style.display==="block"; subcatsPanel.style.display=shown?"none":"block"; });
+  document.addEventListener("click",(e)=>{ if(!subcatsWrap.contains(e.target) && e.target!==subcatsToggle){ subcatsPanel.style.display="none"; } });
+
+  dsRadios.forEach(r=>r.addEventListener("change",(e)=>setDataset(e.target.value)));
+  catSelect.addEventListener("change",(e)=>{ STATE.category=e.target.value; render(); });
+  ptypeSelect.addEventListener("change",(e)=>{ STATE.ptype=e.target.value; render(); });
+  stageSelect.addEventListener("change",(e)=>{ STATE.highlightStage=e.target.value; render(); });
+  scaleSelect.addEventListener("change",(e)=>{ STATE.highlightScale=e.target.value; render(); });
+  $("#reset").addEventListener("click",()=>{
+    STATE.highlightStage="__ALL__"; STATE.highlightScale="__ALL__"; STATE.category="__ALL__"; STATE.ptype="__ALL__";
+    STATE.poSelectedCategories=new Set(DATA.meta.performanceObjectives);
+    STATE.poSelectedSubcats=new Set(DATA.meta.performanceSubcategories||[]);
+    [stageSelect, scaleSelect, catSelect, ptypeSelect].forEach(sel => {
+      if (sel) { const allOption = [...sel.options].find(o => o.textContent === "All"); if (allOption) sel.value = allOption.value; } });
+    if(isSubcatMode()){ buildPOFiltersOnce(); } render();
+  });
+
+  // boot
+  setDataset("PERFORMANCE OBJECTIVES");
+  </script>
+</body>
+</html>

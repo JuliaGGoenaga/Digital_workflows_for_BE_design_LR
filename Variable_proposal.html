@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variable proposal by stage and scale</title>
+  <style>
+    :root{
+      --panel:#ffffff;
+      --border:#e2e8f0;
+      --muted:#6b7280;
+      --text:#0f172a;
+      --blue:#e6f0ff;
+      --accent:#1f4d89;
+      --accent-2:#0ea5e9;
+      --radius:12px;
+    }
+
+    .title-panel {text-align: left; margin-left: 6px; margin-right: 16px; margin-top: 8px;}
+    .title-panel h1 {display: inline-flex; font-size: 14px; font-weight: 600; color: #1f4d89 ; padding: 4px 10px; margin: 0}  
+    .home-btn {display: inline-flex; align-items: center;justify-content: center; font-size: 14px; border-radius: 10px; margin:0 ;background: #f8fafc; text-decoration: none; border: 1px solid #cbd5e1; color: #1f4d89; padding: 4px 4px;}
+    .home-btn:hover { background: #f1f5f9;}
+
+    *{box-sizing:border-box}
+    html, body {height:100%}
+    body{margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text); background: #f1f5f9; /*linear-gradient(180deg, #eaf3ff, #d7e7ff)*/
+      ;}
+
+    .container{max-width: 1000px; margin: 0 auto; padding: 24px 16px 48px 16px; display: grid; gap: 24px; align-items:center;align-items:center;flex-direction: column; }
+    h1.title{ color:#1f4d89; font-weight:700; font-size: clamp(20px, 2.6vw, 30px); line-height:1.25; text-align:center; margin: 0;}
+    .text-block{ margin: 0 auto; text-align:center; width: min(1000px, 90vw); color:#0f172a; background: transparent; padding: 0 4px;font-size: 12px;}
+    .text-block p {margin-bottom: 6px;}
+    .text-block li {margin-bottom: 6px; text-align: left;}
+
+    /* Image bubble */
+    .img-bubble{ margin: 0 auto; display:inline-block;  background:#ffffff; border:1px solid var(--border);  border-radius:20px;  box-shadow: 0 18px 40px rgba(0,0,0,.15);  padding: 10px;}
+    .img-bubble img{  display:block; max-width: min(1000px, 90vw); height:auto; border-radius:14px; }
+
+    .btn{
+      display:inline-flex; gap:8px; align-items:center; margin: 0 auto;
+      font-size:12px; padding:8px 12px;
+      border-radius:10px; border:1px solid #cbd5e1;  background:#f8fafc; color:var(--text);
+      cursor:pointer; text-decoration:none;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+      justify-content:center; text-align: center;
+    }
+    .btn:hover{ background:#f1f5f9; text-decoration:none }
+    .btn.primary{ border-color:#9ec1ff; background:#eef5ff }
+    .buttons { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top: 6px; }
+   
+
+    
+  </style>
+</head>
+<body>
+  <section class="title-panel">
+      <div class="title-panel">
+      <a href="index.html" class="home-btn"> 🏠 </a>
+      <h1>Digital workflows for informed decision making in building envelope design: A systematic literature review.</h1>
+    </section>
+  <div class="container">
+    <!-- Título -->
+    <h1 class="title">Variable proposal by stage and scale</h1>
+
+    <!-- Primer bloque de texto -->
+    <div class="text-block" contenteditable="true" spellcheck="true">
+      <p>The following graph illustrates the matrix proposing optimization variables, design objectives and key considerations across various design stages and spatial 
+      scales. This matrix could be enriched by integrating the optimization variables combined, as explained in the complete text, for example, optimizing 
+      material details and building geometry simultaneously. The selection of variable types and performance objectives should be determined by the designer at the start 
+      of each design process.</p>
+      <p>Nevertheless, the proposed matrix provides specific and valuable insights for variable definition.</p></div>
+
+    <div class="img-bubble">
+      <img src="assets/Variable_proposal.png" alt="Task explanation image" />
+    </div>
+
+    <div class="text-block" contenteditable="true" spellcheck="true">   
+      <ul class="text-block" contenteditable="true" spellcheck="true">
+        <li>The process is guided by the overarching objective established for each combination of design stage and scale, considering design processes 
+            in early stages, adequation processes in preliminary stages and optimization processes in detailed stages. </li>
+        <li>Considering that the primary objective in BE performance-driven design is to obtain a detailed, optimized façade system adapted to its 
+            environment, a guiding line is established to define the logically expected detailing process. This approach distinguishes between main 
+            variables, located below the line, and auxiliary variables, positioned above it. The auxiliary variables, while secondary, provide complementary 
+            information that supports the main design decisions.</li>
+        <li>Before defining the variables to be considered in the design process, it is essential to determine the degree of freedom available to the 
+            designer at the starting point. In some cases, the micro-urban distribution or the primary building shape may already be predetermined. This 
+            reveals two types of variability restrictions: in certain situations, only the façade can be designed from scratch; in others, both the façade 
+            and the massing; and in some cases, the entire set—including urban distribution, building massing, and façade design—can be freely defined.</li>
+        <li>As explianed in the full paper, material properties and system definitions may be less relevant in the early design stages. Consequently, the 
+            variables considered during the early and preliminary stages often indicate the presence or absence of specific <strong>materials or systems</strong> rather than 
+            detailing their characteristics.</li></ul>
+    </div>
+
+    <!-- Buttons -->
+      <div class="buttons">
+        <a class="btn" href="3matrix.html">Matrix of variables, performance objectives and accelerators classified by stage and scale</a>
+        <a class="btn" href="All_refs.html">See all references classified by year and number of tasks</a>
+        <a class="btn" href="KPI_register.html">Performance objectives by scale and regsitered KPIs</a>
+      </div>
+
+  </div>
+</body>
+</html>

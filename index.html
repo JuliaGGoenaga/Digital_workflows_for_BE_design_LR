@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital workflows – Cover</title>
+  <style>
+    :root{
+      --panel:#ffffff;
+      --border:#e2e8f0;
+      --muted:#6b7280;
+      --text:#0f172a;
+      --blue:#e6f0ff;
+      --accent:#1f4d89;
+      --accent-2:#0ea5e9;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    html, body {height:100%}
+    body{margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--text); background: #f1f5f9; /*inear-gradient(180deg, #eaf3ff, #d7e7ff)*/
+      ;}
+
+    /* Shared button style (as your pages) */
+    .btn{
+      display:inline-flex; gap:8px; align-items:center;
+      font-size:12px; padding:8px 12px;
+      border-radius:10px; border:1px solid #cbd5e1;
+      background:#f8fafc; color:var(--text);
+      cursor:pointer; text-decoration:none;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    }
+    .btn:hover{ background:#f1f5f9; text-decoration:none }
+    .btn.primary{ border-color:#9ec1ff; background:#eef5ff }
+    .btn.wide{ padding:10px 16px; font-size:13px }
+
+    /* Layout: centered cover */
+    .cover{
+      min-height:100%;
+      display:flex; align-items:center; justify-content:center;
+      padding:32px 16px;
+    }
+    .wrap{
+      width:min(980px, 92vw);
+      display:grid; gap:18px;
+      text-align:center;
+    }
+    .title{ color:#1f4d89; font-weight:700; font-size: clamp(20px, 2.6vw, 30px); line-height:1.25; margin:0; }
+    .editable{ margin: 4px auto 2px auto; width:min(820px, 90vw); color:#0f172a; font-size: 13px; background: transparent; padding: 0 8px; outline: none;}
+
+    /* Image in a bubble with shadow */
+    .img-bubble{ margin: 10px auto 12px auto;  display:inline-block; background:#ffffff; border:1px solid var(--border);  border-radius:20px; box-shadow: 0 18px 40px rgba(0,0,0,.15);  padding: 20px;}
+    .img-bubble img{ display:block; max-width: min(820px, 90vw); height:auto; border-radius:14px;}
+
+    /* Buttons row */
+    .buttons{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; margin-top: 6px; }
+    .buttons .btn{ white-space:nowrap }
+
+    /* Footer credit */
+    .credit{margin-top: 10px; color:#0f172a; font-size: 13px; font-weight: 500 }
+
+    /* Title-panel reuse (for consistency if you embed in other pages) */
+    .title-panel {text-align:left; margin: 8px 16px 0 16px;}
+    .title-panel h1 {font-size:14px; font-weight:600; color:#1f4d89; padding:4px 10px; margin:0}
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="wrap">
+      <h1 class="title">
+        Digital workflows for informed decision making in building envelope design: A systematic literature review.
+      </h1>
+
+      <!-- Editable blurb -->
+      <div class="editable" spellcheck="true">This paper has systematically reviewed 165 studies related to performance-based 
+        optimization in BE design. By disaggregating each process into 155 distinct tasks, the review classifies these processes 
+        by design stage, design scale, variable type, performance objective, optimization algorithm, or decision-making method. 
+        The study identifies patterns in applying optimization and simulation tools and proposes a methodological framework to 
+        guide future integrative workflows. </div> 
+      <div class="editable" spellcheck="true">The process leads to the proposal of several design matrices that are shown in this 
+        interactive app. This framework establishes a foundation for flexible, user-centered digital workflows that drive improvements 
+        in building efficiency and occupant comfort. </div>  
+
+      <!-- Image bubble (replace src with your repo path) -->
+      <div class="img-bubble" aria-label="cover image bubble">
+        <img src="assets/General_MAP.png" alt="Cover illustration" />
+      </div>
+
+      <!-- Buttons -->
+      <div class="buttons">
+        <a class="btn wide" href="Task_explained.html">Task classification process</a>
+        <a class="btn wide" href="Variable_proposal.html">Variable proposal by stage and scale</a>
+        <a class="btn wide" href="3matrix.html"><strong>Matrix of variables, performance objectives and accelerators classified by stage and scale</strong> </a>
+        <a class="btn wide" href="All_refs.html"><strong>See all references classified by year and number of tasks</strong></a>
+        <a class="btn wide" href="KPI_register.html"><strong>Performance objectives by scale and regsitered KPIs</strong></a>
+      </div>
+
+      <!-- Credit -->
+      <div class="credit">
+        Julia Gomez Goenaga, Aurora Monge Barrio, Karla Saldaña Ochoa, Antonio Villanueva Peñalver. <br />
+        2025
+      </div>
+    </div>
+  </div>
+</body>
+</html>
